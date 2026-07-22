@@ -69,10 +69,9 @@ function getSlotName() {
 async function getCampaigns(sheets) {
   const response =
   await sheets.spreadsheets.values.get({
-    spreadsheetId:
-      process.env.SPREADSHEET_ID,
+    spreadsheetId: process.env.SPREADSHEET_ID,
     range: "Campaigns!A:G",
-    valueRenderOption: "UNFORMATTED_VALUE"
+    valueRenderOption: "FORMATTED_VALUE"
   });
 
   const rows =
@@ -373,25 +372,78 @@ function isCampaignActive(campaign) {
     .tz("Asia/Kolkata")
     .startOf("day");
 
-  const startDate = moment(
-    new Date(
-      (campaign.startDate - 25569) *
-      86400 *
-      1000
-    )
-  ).startOf("day");
+  function parseSheetDate(value) {
 
-  const endDate = moment(
-    new Date(
-      (campaign.endDate - 25569) *
-      86400 *
-      1000
-    )
-  ).endOf("day");
+    if (
+      typeof value === "number" ||
+      /^\d+$/.test(String(value))
+    ) {
+
+      return moment(
+        "1899-12-30"
+      ).add(
+        Number(value),
+        "days"
+      );
+    }
+
+    return moment(
+      String(value).trim(),
+      [
+        "DD/MM/YYYY",
+        "DD-MMM-YYYY",
+        "DD-MM-YYYY",
+        "YYYY-MM-DD"
+      ],
+      true
+    );
+  }
+
+  const startDate =
+    parseSheetDate(
+      campaign.startDate
+    );
+
+  const endDate =
+    parseSheetDate(
+      campaign.endDate
+    );
+
+  if (
+    !startDate.isValid() ||
+    !endDate.isValid()
+  ) {
+
+    console.log(
+      `Invalid dates: ${campaign.startDate} | ${campaign.endDate}`
+    );
+
+    return false;
+  }
+
+  console.log(
+    `Campaign: ${campaign.campaignName}`
+  );
+
+  console.log(
+    `Today: ${today.format("YYYY-MM-DD")}`
+  );
+
+  console.log(
+    `Start: ${startDate.format("YYYY-MM-DD")}`
+  );
+
+  console.log(
+    `End: ${endDate.format("YYYY-MM-DD")}`
+  );
 
   return (
-    today.isSameOrAfter(startDate) &&
-    today.isSameOrBefore(endDate)
+    today.isSameOrAfter(
+      startDate.startOf("day")
+    ) &&
+    today.isSameOrBefore(
+      endDate.endOf("day")
+    )
   );
 }
 async function processCampaign(
