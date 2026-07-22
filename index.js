@@ -368,9 +368,6 @@ async function writeLog(
 }
 // DATE VALIDATION TEMPORARILY DISABLED
 
-console.log(
-  `Processing ${campaign.campaignName}`
-);
 
 async function processCampaign(
   drive,
