@@ -279,21 +279,20 @@ async function uploadFile(
   fileName,
   parentFolderId
 ) {
-  const response =
-    await drive.files.create({
-      requestBody: {
-        name: fileName,
-        parents: [parentFolderId]
-      },
-      media: {
-        mimeType: "image/png",
-        body:
-          fs.createReadStream(
-            filePath
-          )
-      },
-      fields: "id"
-    });
+const response =
+  await drive.files.create({
+    supportsAllDrives: true,
+    requestBody: {
+      name: fileName,
+      parents: [parentFolderId]
+    },
+    media: {
+      mimeType: "image/png",
+      body:
+        fs.createReadStream(filePath)
+    },
+    fields: "id"
+  });
 
   return response.data.id;
 }
@@ -303,12 +302,13 @@ async function makePublic(
   fileId
 ) {
   await drive.permissions.create({
-    fileId,
-    requestBody: {
-      role: "reader",
-      type: "anyone"
-    }
-  });
+  fileId,
+  supportsAllDrives: true,
+  requestBody: {
+    role: "reader",
+    type: "anyone"
+  }
+});
 
   return `https://drive.google.com/file/d/${fileId}/view`;
 }
