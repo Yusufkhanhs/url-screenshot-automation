@@ -69,11 +69,13 @@ async function takeScreenshot(url, fileName) {
   console.log(`Opening ${url}`);
 
   await page.goto(url, {
-    waitUntil: "networkidle",
-    timeout: 60000
-  });
+  waitUntil: "domcontentloaded",
+  timeout: 60000
+});
 
-  await page.waitForTimeout(10000);
+await page.waitForLoadState("domcontentloaded");
+
+await page.waitForTimeout(15000);
 
   await page.mouse.wheel(0, 500);
 
