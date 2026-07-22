@@ -368,82 +368,51 @@ async function writeLog(
 }
 function isCampaignActive(campaign) {
 
-  const today = moment()
-    .tz("Asia/Kolkata")
-    .startOf("day");
+  function parseDate(value) {
 
-  function parseSheetDate(value) {
-
-    if (
-      typeof value === "number" ||
-      /^\d+$/.test(String(value))
-    ) {
-
-      return moment(
-        "1899-12-30"
-      ).add(
-        Number(value),
-        "days"
-      );
+    // Google Sheets serial number
+    if (typeof value === "number") {
+      return moment("1899-12-30")
+        .add(value, "days");
     }
 
+    // Numeric string like "46225"
+    if (!isNaN(value) && value !== "") {
+      return moment("1899-12-30")
+        .add(Number(value), "days");
+    }
+
+    // Normal text dates
     return moment(
       String(value).trim(),
       [
         "DD/MM/YYYY",
-        "DD-MMM-YYYY",
         "DD-MM-YYYY",
+        "DD-MMM-YYYY",
         "YYYY-MM-DD"
       ],
       true
     );
   }
 
-  const startDate =
-    parseSheetDate(
-      campaign.startDate
-    );
+  const today = moment()
+    .tz("Asia/Kolkata")
+    .startOf("day");
 
-  const endDate =
-    parseSheetDate(
-      campaign.endDate
-    );
+  const startDate = parseDate(campaign.startDate);
+  const endDate = parseDate(campaign.endDate);
 
-  if (
-    !startDate.isValid() ||
-    !endDate.isValid()
-  ) {
+  console.log("TODAY :", today.format("DD-MMM-YYYY"));
+  console.log("START :", startDate.format("DD-MMM-YYYY"));
+  console.log("END   :", endDate.format("DD-MMM-YYYY"));
 
-    console.log(
-      `Invalid dates: ${campaign.startDate} | ${campaign.endDate}`
-    );
-
+  if (!startDate.isValid() || !endDate.isValid()) {
     return false;
   }
 
-  console.log(
-    `Campaign: ${campaign.campaignName}`
-  );
-
-  console.log(
-    `Today: ${today.format("YYYY-MM-DD")}`
-  );
-
-  console.log(
-    `Start: ${startDate.format("YYYY-MM-DD")}`
-  );
-
-  console.log(
-    `End: ${endDate.format("YYYY-MM-DD")}`
-  );
-
   return (
-    today.isSameOrAfter(
-      startDate.startOf("day")
-    ) &&
-    today.isSameOrBefore(
-      endDate.endOf("day")
-    )
+    today.isSameOrAfter(startDate.startOf("day")) &&
+    today.isSameOrBefore(endDate.endOf("day"))
   );
 }
 async function processCampaign(
