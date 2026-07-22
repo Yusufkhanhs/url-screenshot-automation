@@ -3,9 +3,17 @@ name: Screenshot Automation
 on:
   workflow_dispatch:
 
+  schedule:
+    - cron: '30 0 * * *'   # 06:00 IST
+    - cron: '30 6 * * *'   # 12:00 IST
+    - cron: '30 12 * * *'  # 18:00 IST
+    - cron: '30 18 * * *'  # 00:00 IST
+
 jobs:
   screenshot:
     runs-on: ubuntu-latest
+
+    timeout-minutes: 120
 
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +34,9 @@ jobs:
         run: node index.js
 
       - name: Upload Screenshot Artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: screenshots
+          name: screenshots-${{ github.run_number }}
           path: "*.png"
+          retention-days: 7
