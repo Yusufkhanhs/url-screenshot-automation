@@ -368,52 +368,63 @@ async function writeLog(
 }
 function isCampaignActive(campaign) {
 
-  function parseDate(value) {
-
-    // Google Sheets serial number
-    if (typeof value === "number") {
-      return moment("1899-12-30")
-        .add(value, "days");
-    }
-
-    // Numeric string like "46225"
-    if (!isNaN(value) && value !== "") {
-      return moment("1899-12-30")
-        .add(Number(value), "days");
-    }
-
-    // Normal text dates
-    return moment(
-      String(value).trim(),
-      [
-        "DD/MM/YYYY",
-        "DD-MM-YYYY",
-        "DD-MMM-YYYY",
-        "YYYY-MM-DD"
-      ],
-      true
-    );
-  }
-
   const today = moment()
     .tz("Asia/Kolkata")
     .startOf("day");
 
-  const startDate = parseDate(campaign.startDate);
-  const endDate = parseDate(campaign.endDate);
+  const startDate = moment(
+    String(campaign.startDate).trim(),
+    [
+      "DD/MM/YYYY",
+      "DD-MM-YYYY",
+      "DD-MMM-YYYY",
+      "YYYY-MM-DD"
+    ],
+    true
+  ).startOf("day");
 
-  console.log("TODAY :", today.format("DD-MMM-YYYY"));
-  console.log("START :", startDate.format("DD-MMM-YYYY"));
-  console.log("END   :", endDate.format("DD-MMM-YYYY"));
+  const endDate = moment(
+    String(campaign.endDate).trim(),
+    [
+      "DD/MM/YYYY",
+      "DD-MM-YYYY",
+      "DD-MMM-YYYY",
+      "YYYY-MM-DD"
+    ],
+    true
+  ).endOf("day");
 
-  if (!startDate.isValid() || !endDate.isValid()) {
+  console.log(
+    `TODAY : ${today.format("DD-MMM-YYYY")}`
+  );
+
+  console.log(
+    `START : ${startDate.format("DD-MMM-YYYY")}`
+  );
+
+  console.log(
+    `END   : ${endDate.format("DD-MMM-YYYY")}`
+  );
+
+  if (
+    !startDate.isValid() ||
+    !endDate.isValid()
+  ) {
+    console.log(
+      `INVALID DATE FORMAT: ${campaign.startDate} | ${campaign.endDate}`
+    );
     return false;
   }
 
-  return (
-    today.isSameOrAfter(startDate.startOf("day")) &&
-    today.isSameOrBefore(endDate.endOf("day"))
+  const active =
+    today.isSameOrAfter(startDate) &&
+    today.isSameOrBefore(endDate);
+
+  console.log(
+    `ACTIVE : ${active}`
   );
+
+  return active;
 }
 async function processCampaign(
   drive,
