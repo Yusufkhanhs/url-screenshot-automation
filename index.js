@@ -85,6 +85,7 @@ async function getCampaigns(sheets) {
 
   for (let i = 1; i < rows.length; i++) {
     const row = rows[i];
+    console.log(row);
 
     campaigns.push({
       campaignId: row[0] || "",
@@ -366,49 +367,7 @@ async function writeLog(
   });
 }
 function isCampaignActive(campaign) {
-
-  const today = moment()
-    .tz("Asia/Kolkata")
-    .startOf("day");
-
-  const startDate = moment(
-    String(campaign.startDate).trim(),
-    [
-      "DD/MM/YYYY",
-      "DD-MMM-YYYY",
-      "DD-MM-YYYY",
-      "YYYY-MM-DD"
-    ],
-    true
-  );
-
-  const endDate = moment(
-    String(campaign.endDate).trim(),
-    [
-      "DD/MM/YYYY",
-      "DD-MMM-YYYY",
-      "DD-MM-YYYY",
-      "YYYY-MM-DD"
-    ],
-    true
-  );
-
-  if (
-    !startDate.isValid() ||
-    !endDate.isValid()
-  ) {
-    console.log(
-      `Invalid dates: ${campaign.startDate} | ${campaign.endDate}`
-    );
-    return false;
-  }
-console.log("TODAY:", today.format());
-console.log("START:", startDate.format());
-console.log("END:", endDate.format());
-  return (
-    today.isSameOrAfter(startDate.startOf("day")) &&
-    today.isSameOrBefore(endDate.endOf("day"))
-  );
+  return true;
 }
 
 async function processCampaign(
