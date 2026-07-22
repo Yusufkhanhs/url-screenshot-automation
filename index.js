@@ -372,28 +372,44 @@ function isCampaignActive(campaign) {
     .startOf("day");
 
   const startDate = moment(
-    campaign.startDate,
-    "DD-MMM-YYYY"
-  ).startOf("day");
+    String(campaign.startDate).trim(),
+    "DD-MMM-YYYY",
+    true
+  );
 
   const endDate = moment(
-    campaign.endDate,
-    "DD-MMM-YYYY"
-  ).endOf("day");
+    String(campaign.endDate).trim(),
+    "DD-MMM-YYYY",
+    true
+  );
+
+  console.log(
+    `Campaign: ${campaign.campaignName}`
+  );
+  console.log(
+    `Start: ${campaign.startDate}`
+  );
+  console.log(
+    `End: ${campaign.endDate}`
+  );
 
   if (
     !startDate.isValid() ||
     !endDate.isValid()
   ) {
     console.log(
-      `Invalid dates for ${campaign.campaignName}`
+      "Date parsing failed"
     );
     return false;
   }
 
   return (
-    today.isSameOrAfter(startDate) &&
-    today.isSameOrBefore(endDate)
+    today.isSameOrAfter(
+      startDate.startOf("day")
+    ) &&
+    today.isSameOrBefore(
+      endDate.endOf("day")
+    )
   );
 }
 
