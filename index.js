@@ -110,10 +110,12 @@ async function getOrCreateFolder(
   parentId
 ) {
   const search =
-    await drive.files.list({
-      q: `'${parentId}' in parents and trashed=false and mimeType='application/vnd.google-apps.folder' and name='${folderName}'`,
-      fields: "files(id,name)"
-    });
+  await drive.files.list({
+    supportsAllDrives: true,
+    includeItemsFromAllDrives: true,
+    q: `'${parentId}' in parents and trashed=false and mimeType='application/vnd.google-apps.folder' and name='${folderName}'`,
+    fields: "files(id,name)"
+  });
 
   if (
     search.data.files &&
