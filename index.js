@@ -68,11 +68,12 @@ function getSlotName() {
 
 async function getCampaigns(sheets) {
   const response =
-    await sheets.spreadsheets.values.get({
-      spreadsheetId:
-        process.env.SPREADSHEET_ID,
-      range: "Campaigns!A:G"
-    });
+  await sheets.spreadsheets.values.get({
+    spreadsheetId:
+      process.env.SPREADSHEET_ID,
+    range: "Campaigns!A:G",
+    valueRenderOption: "UNFORMATTED_VALUE"
+  });
 
   const rows =
     response.data.values || [];
@@ -367,9 +368,32 @@ async function writeLog(
   });
 }
 function isCampaignActive(campaign) {
-  return true;
-}
 
+  const today = moment()
+    .tz("Asia/Kolkata")
+    .startOf("day");
+
+  const startDate = moment(
+    new Date(
+      (campaign.startDate - 25569) *
+      86400 *
+      1000
+    )
+  ).startOf("day");
+
+  const endDate = moment(
+    new Date(
+      (campaign.endDate - 25569) *
+      86400 *
+      1000
+    )
+  ).endOf("day");
+
+  return (
+    today.isSameOrAfter(startDate) &&
+    today.isSameOrBefore(endDate)
+  );
+}
 async function processCampaign(
   drive,
   sheets,
