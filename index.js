@@ -510,29 +510,7 @@ async function main() {
 
 for (const campaign of campaigns) {
 
-if (!isCampaignActive(campaign)) {
 
-  console.log(
-    `Skipping ${campaign.campaignName} - Outside campaign dates`
-  );
-
-  await writeLog(
-    sheets,
-    [
-      moment()
-        .tz("Asia/Kolkata")
-        .format("YYYY-MM-DD HH:mm:ss"),
-      campaign.campaignId,
-      campaign.url,
-      getSlotName(),
-      "SKIPPED",
-      "",
-      "Outside campaign dates"
-    ]
-  );
-
-  continue;
-}
   await processCampaign(
     drive,
     sheets,
