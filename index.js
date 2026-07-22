@@ -366,66 +366,12 @@ async function writeLog(
     }
   });
 }
-function isCampaignActive(campaign) {
+// DATE VALIDATION TEMPORARILY DISABLED
 
-  const today = moment()
-    .tz("Asia/Kolkata")
-    .startOf("day");
+console.log(
+  `Processing ${campaign.campaignName}`
+);
 
-  const startDate = moment(
-    String(campaign.startDate).trim(),
-    [
-      "DD/MM/YYYY",
-      "DD-MM-YYYY",
-      "DD-MMM-YYYY",
-      "YYYY-MM-DD"
-    ],
-    true
-  ).startOf("day");
-
-  const endDate = moment(
-    String(campaign.endDate).trim(),
-    [
-      "DD/MM/YYYY",
-      "DD-MM-YYYY",
-      "DD-MMM-YYYY",
-      "YYYY-MM-DD"
-    ],
-    true
-  ).endOf("day");
-
-  console.log(
-    `TODAY : ${today.format("DD-MMM-YYYY")}`
-  );
-
-  console.log(
-    `START : ${startDate.format("DD-MMM-YYYY")}`
-  );
-
-  console.log(
-    `END   : ${endDate.format("DD-MMM-YYYY")}`
-  );
-
-  if (
-    !startDate.isValid() ||
-    !endDate.isValid()
-  ) {
-    console.log(
-      `INVALID DATE FORMAT: ${campaign.startDate} | ${campaign.endDate}`
-    );
-    return false;
-  }
-
-  const active =
-    today.isSameOrAfter(startDate) &&
-    today.isSameOrBefore(endDate);
-
-  console.log(
-    `ACTIVE : ${active}`
-  );
-
-  return active;
-}
 async function processCampaign(
   drive,
   sheets,
