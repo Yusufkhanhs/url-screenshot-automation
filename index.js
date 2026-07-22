@@ -204,28 +204,15 @@ async function stitchTaskbar(
   screenshotPath,
   finalPath
 ) {
-  const screenshot =
-    await Jimp.read(
+  const screenshotBase64 =
+    fs.readFileSync(
       screenshotPath
-    );
+    ).toString("base64");
 
-  const taskbar =
-    await Jimp.read(
+  const taskbarBase64 =
+    fs.readFileSync(
       "taskbar-template.png"
-    );
-
-  const width =
-    screenshot.bitmap.width;
-
-  taskbar.resize(
-    width,
-    Jimp.AUTO
-  );
-
-  const font =
-    await Jimp.loadFont(
-      Jimp.FONT_SANS_32_WHITE
-    );
+    ).toString("base64");
 
   const now = getCurrentIST();
 
@@ -235,42 +222,93 @@ async function stitchTaskbar(
   const dateText =
     now.format("DD-MM-YYYY");
 
-  taskbar.print(
-    font,
-    width - 220,
-    8,
-    timeText
-  );
+  const browser =
+    await chromium.launch({
+      headless: true
+    });
 
-  taskbar.print(
-    font,
-    width - 260,
-    42,
-    dateText
-  );
+  const page =
+    await browser.newPage({
+      viewport: {
+        width: 1920,
+        height: 1200
+      }
+    });
 
-  const merged =
-    new Jimp(
-      width,
-      screenshot.bitmap.height +
-        taskbar.bitmap.height
-    );
+  await page.setContent(`
+<html>
+<head>
+<style>
+body{
+  margin:0;
+  padding:0;
+  background:#000;
+  font-family:'Segoe UI', Arial, sans-serif;
+}
 
-  merged.blit(
-    screenshot,
-    0,
-    0
-  );
+.wrapper{
+  width:1920px;
+}
 
-  merged.blit(
-    taskbar,
-    0,
-    screenshot.bitmap.height
-  );
+.taskbar{
+  position:relative;
+}
 
-  await merged.writeAsync(
-    finalPath
-  );
+.time{
+  position:absolute;
+  right:18px;
+  top:5px;
+  color:white;
+  font-size:18px;
+  font-weight:400;
+}
+
+.date{
+  position:absolute;
+  right:18px;
+  top:28px;
+  color:white;
+  font-size:16px;
+  font-weight:400;
+}
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+<img
+src="data:image/png;base64,${screenshotBase64}"
+width="1920">
+
+<div class="taskbar">
+
+<img
+src="data:image/png;base64,${taskbarBase64}"
+width="1920">
+
+<div class="time">
+${timeText}
+</div>
+
+<div class="date">
+${dateText}
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>
+`);
+
+  await page.screenshot({
+    path: finalPath,
+    fullPage: true
+  });
+
+  await browser.close();
 }
 
 async function uploadFile(
