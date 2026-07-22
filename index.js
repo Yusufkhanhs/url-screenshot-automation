@@ -124,17 +124,17 @@ async function getOrCreateFolder(
     return search.data.files[0].id;
   }
 
-  const folder =
-    await drive.files.create({
-      requestBody: {
-        name: folderName,
-        mimeType:
-          "application/vnd.google-apps.folder",
-        parents: [parentId]
-      },
-      fields: "id"
-    });
-
+const folder =
+  await drive.files.create({
+    supportsAllDrives: true,
+    requestBody: {
+      name: folderName,
+      mimeType:
+        "application/vnd.google-apps.folder",
+      parents: [parentId]
+    },
+    fields: "id"
+  });
   return folder.data.id;
 }
 
