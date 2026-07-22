@@ -365,6 +365,37 @@ async function writeLog(
     }
   });
 }
+function isCampaignActive(campaign) {
+
+  const today = moment()
+    .tz("Asia/Kolkata")
+    .startOf("day");
+
+  const startDate = moment(
+    campaign.startDate,
+    "DD-MMM-YYYY"
+  ).startOf("day");
+
+  const endDate = moment(
+    campaign.endDate,
+    "DD-MMM-YYYY"
+  ).endOf("day");
+
+  if (
+    !startDate.isValid() ||
+    !endDate.isValid()
+  ) {
+    console.log(
+      `Invalid dates for ${campaign.campaignName}`
+    );
+    return false;
+  }
+
+  return (
+    today.isSameOrAfter(startDate) &&
+    today.isSameOrBefore(endDate)
+  );
+}
 
 async function processCampaign(
   drive,
@@ -502,13 +533,37 @@ async function main() {
     `Found ${campaigns.length} active campaigns`
   );
 
-  for (const campaign of campaigns) {
-    await processCampaign(
-      drive,
-      sheets,
-      campaign
-    );
-  }
+for (const campaign of campaigns) {
+
+if (!isCampaignActive(campaign)) {
+
+  console.log(
+    `Skipping ${campaign.campaignName} - Outside campaign dates`
+  );
+
+  await writeLog(
+    sheets,
+    [
+      moment()
+        .tz("Asia/Kolkata")
+        .format("YYYY-MM-DD HH:mm:ss"),
+      campaign.campaignId,
+      campaign.url,
+      getSlotName(),
+      "SKIPPED",
+      "",
+      "Outside campaign dates"
+    ]
+  );
+
+  continue;
+}
+  await processCampaign(
+    drive,
+    sheets,
+    campaign
+  );
+}
 
   console.log(
     "ALL CAMPAIGNS COMPLETED"
