@@ -19,14 +19,14 @@ jobs:
       - run: npx playwright install chromium
 
       - name: Run Script
-           - name: Upload Screenshot Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: screenshots
-          path: "*.png"
         env:
           GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
           DRIVE_ROOT_FOLDER_ID: ${{ secrets.DRIVE_ROOT_FOLDER_ID }}
         run: node index.js
-         
+
+      - name: Upload Screenshot Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: "*.png"
