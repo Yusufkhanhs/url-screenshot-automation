@@ -5,9 +5,11 @@
   "scripts": {
     "start": "node index.js"
   },
-  "dependencies": {
+ "dependencies": {
     "googleapis": "^144.0.0",
     "moment-timezone": "^0.5.48",
-    "playwright": "^1.54.0"
+    "playwright": "^1.54.0",
+    "jimp": "^0.22.12"
   }
+  
 }
