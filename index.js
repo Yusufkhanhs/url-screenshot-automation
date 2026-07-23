@@ -203,18 +203,25 @@ async function takeScreenshot(
 
 async function stitchTaskbar(
   screenshotPath,
-  finalPath
+  finalPath,
+  originalUrl
 ) {
+  
   const screenshotBase64 =
     fs.readFileSync(
       screenshotPath
     ).toString("base64");
-
+const cleanUrl = new URL(
+  originalUrl
+).origin;
   const taskbarBase64 =
     fs.readFileSync(
       "taskbar-template.png"
     ).toString("base64");
-
+const browserHeaderBase64 =
+  fs.readFileSync(
+    "browser-header.png"
+  ).toString("base64");
   const now = getCurrentIST();
 
   const timeText =
@@ -272,12 +279,50 @@ body{
   font-size:16px;
   font-weight:400;
 }
+
+.browser-header{
+  position:relative;
+  width:1920px;
+}
+
+.address-bar{
+  position:absolute;
+  left:170px;
+  top:18px;
+  width:1420px;
+  height:40px;
+
+  display:flex;
+  align-items:center;
+
+  font-size:20px;
+  color:#202124;
+font-size:18px;
+font-weight:400;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  overflow:hidden;
+  white-space:nowrap;
+}
 </style>
 </head>
 <body>
 
 <div class="wrapper">
+<div class="browser-header">
 
+<img
+src="data:image/png;base64,${browserHeaderBase64}"
+style="width:1920px;height:auto;">
+
+<div class="address-bar">
+${cleanUrl}
+</div>
+
+</div>
 <img
 src="data:image/png;base64,${screenshotBase64}"
 width="1920">
@@ -420,10 +465,11 @@ async function processCampaign(
       rawFile
     );
 
-    await stitchTaskbar(
-      rawFile,
-      finalFile
-    );
+await stitchTaskbar(
+  rawFile,
+  finalFile,
+  campaign.url
+);
 
     const fileId =
       await uploadFile(
