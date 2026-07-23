@@ -1,3 +1,4 @@
+console.log("BUILD VERSION: JULY-23-ADDRESSBAR-V3");
 const { google } = require("googleapis");
 const { chromium } = require("playwright");
 const Jimp = require("jimp");
