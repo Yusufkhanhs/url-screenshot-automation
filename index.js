@@ -292,7 +292,7 @@ body{
   position:absolute;
 
   left:208px;
-  top:66px;
+  top:68px;
 
   width:1379px;
   height:50px;
