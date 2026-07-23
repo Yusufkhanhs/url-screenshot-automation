@@ -241,8 +241,9 @@ const browserHeaderBase64 =
         width: 1920,
         height: 1200
       }
-    });
-
+      });
+console.log("ADDRESS BAR CSS TEST");
+console.log("URL:", cleanUrl);
   await page.setContent(`
 <html>
 <head>
@@ -282,7 +283,8 @@ body{
 
 .browser-header{
   position:relative;
-  width:1920px;
+  width:1918px;
+  height:129px;
 }
 
 .address-bar{
@@ -294,15 +296,16 @@ body{
   width:1379px;
   height:50px;
 
+  border:3px solid red;
+  background:rgba(255,0,0,0.2);
+
   display:flex;
   align-items:center;
 
   padding-left:14px;
 
   font-size:22px;
-  font-family:'Segoe UI', Arial, sans-serif;
-
-  color:#000000;
+  color:black;
 
   overflow:hidden;
   white-space:nowrap;
@@ -316,7 +319,7 @@ body{
 
 <img
 src="data:image/png;base64,${browserHeaderBase64}"
-style="width:1920px;height:130px;display:block;">
+style="width:1918px;height:129px;display:block;">
 
 <div class="address-bar">
 ${cleanUrl}
