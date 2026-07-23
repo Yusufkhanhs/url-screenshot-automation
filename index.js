@@ -151,9 +151,9 @@ async function takeScreenshot(
   const page =
     await browser.newPage({
       viewport: {
-        width: 1920,
-        height: 1080
-      }
+  width: 1920,
+  height: 1350
+}
     });
 
   console.log(`Opening ${url}`);
@@ -316,7 +316,7 @@ font-weight:400;
 
 <img
 src="data:image/png;base64,${browserHeaderBase64}"
-style="width:1920px;height:auto;">
+style="width:1920px;height:130px;display:block;">
 
 <div class="address-bar">
 ${cleanUrl}
