@@ -160,21 +160,49 @@ async function takeScreenshot(
   console.log(`Opening ${url}`);
 
   await page.goto(url, {
-    waitUntil: "domcontentloaded",
+    waitUntil: "networkidle",
     timeout: 120000
   });
 
-  await page.waitForTimeout(15000);
+await page.waitForTimeout(10000);
 
-  await page.mouse.move(500, 300);
+await page.mouse.move(500, 300);
 
-  await page.mouse.wheel(0, 700);
+await page.mouse.wheel(0, 700);
 
-  await page.waitForTimeout(3000);
+await page.waitForTimeout(5000);
 
-  await page.mouse.wheel(0, -700);
+await page.mouse.wheel(0, -700);
 
-  await page.waitForTimeout(3000);
+await page.waitForTimeout(5000);
+
+console.log("Waiting for ad creatives...");
+
+try {
+  await page.waitForFunction(
+    () => {
+      const iframes =
+        document.querySelectorAll("iframe");
+
+      return [...iframes].some(
+        iframe =>
+          iframe.offsetHeight > 100 &&
+          iframe.offsetWidth > 100
+      );
+    },
+    { timeout: 60000 }
+  );
+
+  console.log(
+    "Ad iframe detected"
+  );
+} catch {
+  console.log(
+    "Proceeding without ad detection"
+  );
+}
+
+await page.waitForTimeout(10000);
 
   try {
     await page.waitForFunction(
