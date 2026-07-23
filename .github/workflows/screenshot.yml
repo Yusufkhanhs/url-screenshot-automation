@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
 
   schedule:
-    - cron: '30 0 * * *'   # 06:00 IST
-    - cron: '30 6 * * *'   # 12:00 IST
-    - cron: '30 12 * * *'  # 18:00 IST
-    - cron: '30 18 * * *'  # 00:00 IST
+    - cron: '30 0 * * *'    # 06:00 IST
+    - cron: '30 6 * * *'    # 12:00 IST
+    - cron: '30 12 * * *'   # 18:00 IST
+    - cron: '30 18 * * *'   # 00:00 IST
 
 jobs:
   screenshot:
@@ -18,27 +18,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-   - uses: actions/setup-node@v4
-  with:
-    node-version: 20
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-- name: Install Fonts
-  run: |
-    sudo apt-get update
-    sudo apt-get install -y fonts-noto-core fonts-noto-extra
+      - name: Install Hindi Fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            fonts-noto \
+            fonts-noto-core \
+            fonts-noto-cjk \
+            fonts-noto-extra
 
-- run: npm install
+      - name: Install Dependencies
+        run: npm install
 
-- run: npx playwright install chromium
+      - name: Install Playwright
+        run: npx playwright install chromium
 
       - name: Run Script
         env:
           GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
           DRIVE_ROOT_FOLDER_ID: ${{ secrets.DRIVE_ROOT_FOLDER_ID }}
-       - name: Install Hindi Fonts
-  run:     sudo apt-get update
-    sudo apt-get install -y fonts-noto fonts-noto-core fonts-noto-cjk fonts-noto-extra
         run: node index.js
 
       - name: Upload Screenshot Artifact
