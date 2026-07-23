@@ -140,87 +140,86 @@ const folder =
   return folder.data.id;
 }
 
-async function takeScreenshot(
-  url,
-  fileName
-) {
-  const browser =
-    await chromium.launch({
-      headless: true
-    });
+async function takeScreenshot(url, fileName) {
 
-  const page =
-    await browser.newPage({
-      viewport: {
-  width: 1920,
-  height: 1350
-}
-    });
+  const browser = await chromium.launch({
+    headless: true
+  });
+
+  const page = await browser.newPage({
+    viewport: {
+      width: 1920,
+      height: 1350
+    }
+  });
 
   console.log(`Opening ${url}`);
 
+  try {
+
   await page.goto(url, {
-    waitUntil: "networkidle",
+    waitUntil: "domcontentloaded",
     timeout: 120000
   });
 
-await page.waitForTimeout(10000);
-
-await page.mouse.move(500, 300);
-
-await page.mouse.wheel(0, 700);
-
-await page.waitForTimeout(5000);
-
-await page.mouse.wheel(0, -700);
-
-await page.waitForTimeout(5000);
-
-console.log("Waiting for ad creatives...");
-
-try {
-  await page.waitForFunction(
-    () => {
-      const iframes =
-        document.querySelectorAll("iframe");
-
-      return [...iframes].some(
-        iframe =>
-          iframe.offsetHeight > 100 &&
-          iframe.offsetWidth > 100
-      );
-    },
-    { timeout: 60000 }
-  );
-
-  console.log(
-    "Ad iframe detected"
-  );
-} catch {
-  console.log(
-    "Proceeding without ad detection"
-  );
 }
+catch (err) {
 
-await page.waitForTimeout(10000);
+  console.log(err.message);
 
-  try {
-    await page.waitForFunction(
-      () =>
-        document.querySelectorAll(
-          "iframe"
-        ).length >= 2,
-      {
-        timeout: 30000
-      }
-    );
-  } catch (e) {
-    console.log(
-      "Ad iframes not detected"
-    );
+  if (!page.url()) {
+    throw err;
   }
 
+  console.log("Continuing with partially loaded page...");
+
+}
+
+  // Give page time to execute scripts
+  await page.waitForTimeout(10000);
+await page.waitForLoadState("load").catch(() => {});
+  // Scroll to trigger lazy ads
+  await page.mouse.move(500, 300);
+
+  await page.mouse.wheel(0, 700);
+
   await page.waitForTimeout(5000);
+
+  await page.mouse.wheel(0, -700);
+
+  await page.waitForTimeout(5000);
+
+  console.log("Waiting for visible ads...");
+
+  try {
+
+    await page.waitForFunction(() => {
+
+      const frames = [...document.querySelectorAll("iframe")];
+
+      return frames.some(frame => {
+        const rect = frame.getBoundingClientRect();
+
+        return (
+          rect.width > 250 &&
+          rect.height > 150
+        );
+      });
+
+    }, {
+      timeout: 60000
+    });
+
+    console.log("Visible ad detected.");
+
+  } catch {
+
+    console.log("No visible ad found within 60 seconds.");
+
+  }
+
+  // Final wait for rendering
+  await page.waitForTimeout(8000);
 
   await page.screenshot({
     path: fileName,
@@ -228,6 +227,7 @@ await page.waitForTimeout(10000);
   });
 
   await browser.close();
+
 }
 
 async function stitchTaskbar(
