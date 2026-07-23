@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
 
   schedule:
-    - cron: '30 0 * * *'    # 06:00 IST
-    - cron: '30 6 * * *'    # 12:00 IST
-    - cron: '30 12 * * *'   # 18:00 IST
-    - cron: '30 18 * * *'   # 00:00 IST
+    - cron: '30 0 * * *'   # 06:00 IST
+    - cron: '30 6 * * *'   # 12:00 IST
+    - cron: '30 12 * * *'  # 18:00 IST
+    - cron: '30 18 * * *'  # 00:00 IST
 
 jobs:
   screenshot:
@@ -34,7 +34,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Install Playwright
+      - name: Install Chromium
         run: npx playwright install chromium
 
       - name: Run Script
