@@ -287,22 +287,22 @@ body{
 
 .address-bar{
   position:absolute;
-  left:170px;
-  top:18px;
-  width:1420px;
-  height:40px;
+
+  left:202px;
+  top:66px;
+
+  width:1379px;
+  height:50px;
 
   display:flex;
   align-items:center;
 
-  font-size:20px;
-  color:#202124;
-font-size:18px;
-font-weight:400;
+  padding-left:14px;
 
-  font-family:
-    Arial,
-    sans-serif;
+  font-size:22px;
+  font-family:'Segoe UI', Arial, sans-serif;
+
+  color:#000000;
 
   overflow:hidden;
   white-space:nowrap;
