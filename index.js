@@ -304,7 +304,7 @@ body{
   padding-left:14px;
 
   font-size:22px;
-  color:black;
+  color:white;
 
   overflow:hidden;
   white-space:nowrap;
