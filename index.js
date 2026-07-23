@@ -291,14 +291,12 @@ body{
 .address-bar{
   position:absolute;
 
-  left:202px;
+  left:208px;
   top:66px;
 
   width:1379px;
   height:50px;
 
-  border:3px solid red;
-  background:rgba(255,0,0,0.2);
 
   display:flex;
   align-items:center;
